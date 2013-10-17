@@ -3,6 +3,9 @@ Buffer by Percentage
 
 Plugin for QGIS 2.0 for buffering polygon layers so the resulting features' area is a specified percentage of the original.
 
+![](world_buffered.png "Countries buffered to take up the area they would cover if they had the same population density as India")
+
+
 Usage
 ---------
 *Input vector layer*: lists all polygon layers currently loaded. Select the one you want to buffer.
