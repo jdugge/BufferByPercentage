@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui_bufferbypercentage.ui'
 #
-# Created: Wed Oct 16 21:54:39 2013
+# Created: Thu Oct 17 23:24:00 2013
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -51,7 +51,7 @@ class Ui_BufferByPercentage(object):
         self._5 = QtGui.QHBoxLayout()
         self._5.setObjectName(_fromUtf8("_5"))
         self.rdoBuffer = QtGui.QRadioButton(BufferByPercentage)
-        self.rdoBuffer.setChecked(True)
+        self.rdoBuffer.setChecked(False)
         self.rdoBuffer.setObjectName(_fromUtf8("rdoBuffer"))
         self._5.addWidget(self.rdoBuffer)
         self.param = QtGui.QLineEdit(BufferByPercentage)
@@ -142,7 +142,7 @@ class Ui_BufferByPercentage(object):
         QtCore.QMetaObject.connectSlotsByName(BufferByPercentage)
 
     def retranslateUi(self, BufferByPercentage):
-        BufferByPercentage.setWindowTitle(QtGui.QApplication.translate("BufferByPercentage", "BufferByPercentage", None, QtGui.QApplication.UnicodeUTF8))
+        BufferByPercentage.setWindowTitle(QtGui.QApplication.translate("BufferByPercentage", "Buffer by Percentage", None, QtGui.QApplication.UnicodeUTF8))
         self.label_1.setText(QtGui.QApplication.translate("BufferByPercentage", "Input vector layer", None, QtGui.QApplication.UnicodeUTF8))
         self.lblSegments.setText(QtGui.QApplication.translate("BufferByPercentage", "Segments to approximate", None, QtGui.QApplication.UnicodeUTF8))
         self.rdoBuffer.setText(QtGui.QApplication.translate("BufferByPercentage", "Buffer area percentage", None, QtGui.QApplication.UnicodeUTF8))

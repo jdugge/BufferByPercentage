@@ -26,10 +26,10 @@ email=juernjakob@gmail.com
 # tags are comma separated with spaces allowed
 tags=
 
-homepage=
+homepage=https://github.com/jdugge/BufferByPercentage
 tracker=
-repository=
-icon=icon.png
+repository=https://github.com/jdugge/BufferByPercentage
+icon=icon.svg
 # experimental flag
 experimental=False
 

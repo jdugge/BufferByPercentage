@@ -61,7 +61,7 @@ class BufferByPercentage:
     def initGui(self):
         # Create action that will start plugin configuration
         self.action = QAction(
-            QIcon(":/plugins/bufferbypercentage/icon.png"),
+            QIcon(":/plugins/bufferbypercentage/icon.svg"),
             u"Buffer by percentage", self.iface.mainWindow())
         # connect the action to the run method
         self.action.triggered.connect(self.run)
