@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/bufferbypercentage" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
