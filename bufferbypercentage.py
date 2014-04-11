@@ -147,7 +147,7 @@ class BufferByPercentage:
                     layername = os.path.splitext(os.path.basename(str(shapefilename)))[0]
                     vlayer = QgsVectorLayer(shapefilename, layername, "ogr")
                     QgsMapLayerRegistry.instance().addMapLayer(vlayer)
-            self.iface.messageBar().pushMessage("Buffer by Percentage", "Process complete")
+            self.iface.messageBar().pushMessage("Buffer by Percentage", "Process complete", duration=3)
             
             self.iface.mainWindow().statusBar().clearMessage()
             self.iface.mapCanvas().refresh()
