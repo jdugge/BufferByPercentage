@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui_bufferbypercentage.ui'
 #
-# Created: Thu Oct 17 23:24:00 2013
-#      by: PyQt4 UI code generator 4.9.1
+# Created: Fri Apr 11 19:02:48 2014
+#      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_BufferByPercentage(object):
     def setupUi(self, BufferByPercentage):
@@ -42,7 +51,7 @@ class Ui_BufferByPercentage(object):
         self.segments = QtGui.QSpinBox(BufferByPercentage)
         self.segments.setMinimum(1)
         self.segments.setMaximum(10000)
-        self.segments.setProperty("value", 1)
+        self.segments.setProperty("value", 5)
         self.segments.setObjectName(_fromUtf8("segments"))
         self.horizontalLayout.addWidget(self.segments)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -142,14 +151,14 @@ class Ui_BufferByPercentage(object):
         QtCore.QMetaObject.connectSlotsByName(BufferByPercentage)
 
     def retranslateUi(self, BufferByPercentage):
-        BufferByPercentage.setWindowTitle(QtGui.QApplication.translate("BufferByPercentage", "Buffer by Percentage", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_1.setText(QtGui.QApplication.translate("BufferByPercentage", "Input vector layer", None, QtGui.QApplication.UnicodeUTF8))
-        self.lblSegments.setText(QtGui.QApplication.translate("BufferByPercentage", "Segments to approximate", None, QtGui.QApplication.UnicodeUTF8))
-        self.rdoBuffer.setText(QtGui.QApplication.translate("BufferByPercentage", "Buffer area percentage", None, QtGui.QApplication.UnicodeUTF8))
-        self.param.setText(QtGui.QApplication.translate("BufferByPercentage", "100", None, QtGui.QApplication.UnicodeUTF8))
-        self.radioPercentageField.setText(QtGui.QApplication.translate("BufferByPercentage", "Buffer area percentage field", None, QtGui.QApplication.UnicodeUTF8))
-        self.radioMemoryLayer.setText(QtGui.QApplication.translate("BufferByPercentage", "Output to memory layer", None, QtGui.QApplication.UnicodeUTF8))
-        self.radioOutputLayer.setText(QtGui.QApplication.translate("BufferByPercentage", "Output shapefile", None, QtGui.QApplication.UnicodeUTF8))
-        self.btnBrowse.setText(QtGui.QApplication.translate("BufferByPercentage", "Browse", None, QtGui.QApplication.UnicodeUTF8))
-        self.checkboxAddToCanvas.setText(QtGui.QApplication.translate("BufferByPercentage", "Add result to canvas", None, QtGui.QApplication.UnicodeUTF8))
+        BufferByPercentage.setWindowTitle(_translate("BufferByPercentage", "Buffer by Percentage", None))
+        self.label_1.setText(_translate("BufferByPercentage", "Input vector layer", None))
+        self.lblSegments.setText(_translate("BufferByPercentage", "Segments to approximate", None))
+        self.rdoBuffer.setText(_translate("BufferByPercentage", "Buffer area percentage", None))
+        self.param.setText(_translate("BufferByPercentage", "100", None))
+        self.radioPercentageField.setText(_translate("BufferByPercentage", "Buffer area percentage field", None))
+        self.radioMemoryLayer.setText(_translate("BufferByPercentage", "Output to memory layer", None))
+        self.radioOutputLayer.setText(_translate("BufferByPercentage", "Output shapefile", None))
+        self.btnBrowse.setText(_translate("BufferByPercentage", "Browse", None))
+        self.checkboxAddToCanvas.setText(_translate("BufferByPercentage", "Add result to canvas", None))
 
