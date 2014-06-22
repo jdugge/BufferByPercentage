@@ -79,66 +79,67 @@ class BufferByPercentage:
     def run(self):
         # Populate the combo boxes
         self.dlg.populateLayers()
-        
+
         self.dlg.show()
         result = self.dlg.exec_()
         if result == 1:
             self.target_factor = float(self.dlg.ui.param.text())/100.0
             self.segments = self.dlg.ui.segments.value()
-            
+
             layer = ftu.getMapLayerByName(self.dlg.ui.inputLayer.currentText())
             fieldList = list(layer.dataProvider().fields())
-            
+
             if self.dlg.ui.radioOutputLayer.isChecked():
                 shapefilename = self.dlg.ui.outputLayer.text()
                 if shapefilename == "":
                     return 1
-            
-            attributeIndex = -1    
+
+            attributeIndex = -1
             if self.dlg.ui.radioPercentageField.isChecked():
                 attributeName = self.dlg.ui.dropdownPercentageField.currentText()
                 attributeIndex = layer.dataProvider().fieldNameIndex(attributeName)
-            
+
             nFeatures = layer.featureCount()
-            
-            
+
             # Create a memory layer for storing the results
-            resultl = QgsVectorLayer("Polygon", "result", "memory")
+            crsString = layer.crs().authid()
+            resultl = QgsVectorLayer("Polygon?crs=" + crsString,
+                "result", "memory")
             resultpr = resultl.dataProvider()
             resultpr.addAttributes(fieldList)
-            
-                
-                
-            
+
+
+
+
             featuresScaled = []
             # Loop over the features
             for i, feature in enumerate(layer.dataProvider().getFeatures()):
                 self.iface.mainWindow().statusBar().showMessage("Buffering feature {} of {}".format(i+1,nFeatures))
                 self.area_unscaled = feature.geometry().area()
-                
+
                 if attributeIndex >= 0:
                     if feature[attributeIndex] == "":
                         percentage = 0
                     else:
                         percentage = float(feature[attributeIndex])
-                    
+
                     self.target_factor = max(0,percentage/100.0)
-                    
+
                 # Find target buffer length
                 buffer_initial = 0.1*(feature.geometry().boundingBox().width() +
                                          feature.geometry().boundingBox().height() )
-                
-                
+
+
                 buffer_length = self.secant(self.func,buffer_initial, 2*buffer_initial, feature)
-            
+
                 # Assign feature the buffered geometry
                 feature.setGeometry(feature.geometry().buffer(buffer_length,self.segments))
-                
+
                 featuresScaled.append(feature)
-            
-            self.iface.mainWindow().statusBar().showMessage("Adding features to results layer")    
+
+            self.iface.mainWindow().statusBar().showMessage("Adding features to results layer")
             resultpr.addFeatures(featuresScaled)
-            
+
             if self.dlg.ui.radioMemoryLayer.isChecked():
                 QgsMapLayerRegistry.instance().addMapLayer(resultl)
             elif self.dlg.ui.radioOutputLayer.isChecked():
@@ -148,20 +149,20 @@ class BufferByPercentage:
                     vlayer = QgsVectorLayer(shapefilename, layername, "ogr")
                     QgsMapLayerRegistry.instance().addMapLayer(vlayer)
             self.iface.messageBar().pushMessage("Buffer by Percentage", "Process complete", duration=3)
-            
+
             self.iface.mainWindow().statusBar().clearMessage()
             self.iface.mapCanvas().refresh()
-                    
+
     # Define the function for which to find the root
     def func(self, buffer_length, feature):
         geometry_scaled = feature.geometry().buffer(buffer_length,self.segments)
         area_scaled = geometry_scaled.area()
         return area_scaled/self.area_unscaled-(self.target_factor)
-        
+
     # Secant method for iteratively finding the root of a function
     # Taken from http://www.physics.rutgers.edu/~masud/computing/WPark_recipes_in_python.html
     def secant(self, func, oldx, x, *args, **kwargs):
-        TOL = kwargs.pop('TOL',1e-6) 
+        TOL = kwargs.pop('TOL',1e-6)
         oldf, f = func(oldx, *args), func(x, *args)
         if (abs(f) > abs(oldf)):
             oldx, x = x, oldx
