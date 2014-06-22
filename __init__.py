@@ -49,5 +49,5 @@ def email():
 
 def classFactory(iface):
     # load BufferByPercentage class from file BufferByPercentage
-    from bufferbypercentage import BufferByPercentage
-    return BufferByPercentage(iface)
+    from bufferbypercentage import BufferByPercentagePlugin
+    return BufferByPercentagePlugin(iface)

@@ -37,7 +37,7 @@ path = os.path.dirname(fTools.__file__)
 ftu = imp.load_source('ftools_utils', os.path.join(path,'tools','ftools_utils.py'))
 
 
-class BufferByPercentage:
+class BufferByPercentagePlugin:
 
     def __init__(self, iface):
         # Save reference to the QGIS interface
@@ -108,13 +108,11 @@ class BufferByPercentage:
             resultpr = resultl.dataProvider()
             resultpr.addAttributes(fieldList)
 
-
-
-
             featuresScaled = []
             # Loop over the features
             for i, feature in enumerate(layer.dataProvider().getFeatures()):
-                self.iface.mainWindow().statusBar().showMessage("Buffering feature {} of {}".format(i+1,nFeatures))
+                self.iface.mainWindow().statusBar().showMessage(
+                    "Buffering feature {} of {}".format(i + 1, nFeatures))
                 self.area_unscaled = feature.geometry().area()
 
                 if attributeIndex >= 0:
@@ -130,7 +128,9 @@ class BufferByPercentage:
                                          feature.geometry().boundingBox().height() )
 
 
-                buffer_length = self.secant(self.func,buffer_initial, 2*buffer_initial, feature)
+                buffer_length = secant(calculateError,buffer_initial,
+                    2*buffer_initial, feature.geometry(), self.segments,
+                    self.area_unscaled, self.target_factor)
 
                 # Assign feature the buffered geometry
                 feature.setGeometry(feature.geometry().buffer(buffer_length,self.segments))
@@ -153,22 +153,27 @@ class BufferByPercentage:
             self.iface.mainWindow().statusBar().clearMessage()
             self.iface.mapCanvas().refresh()
 
-    # Define the function for which to find the root
-    def func(self, buffer_length, feature):
-        geometry_scaled = feature.geometry().buffer(buffer_length,self.segments)
-        area_scaled = geometry_scaled.area()
-        return area_scaled/self.area_unscaled-(self.target_factor)
 
-    # Secant method for iteratively finding the root of a function
-    # Taken from http://www.physics.rutgers.edu/~masud/computing/WPark_recipes_in_python.html
-    def secant(self, func, oldx, x, *args, **kwargs):
-        TOL = kwargs.pop('TOL',1e-6)
-        oldf, f = func(oldx, *args), func(x, *args)
-        if (abs(f) > abs(oldf)):
-            oldx, x = x, oldx
-            oldf, f = f, oldf
-        while 1:
-            dx = f * (x - oldx) / float(f - oldf)
-            if abs(dx) < TOL * (1 + abs(x)): return x - dx
-            oldx, x = x, x - dx
-            oldf, f = f, func(x, *args)
+# Define the function for which to find the root
+def calculateError(buffer_length, geometry, segments, area_unscaled,
+    target_factor):
+    geometry_scaled = geometry.buffer(buffer_length, segments)
+    area_scaled = geometry_scaled.area()
+    return area_scaled / area_unscaled - target_factor
+
+
+# Secant method for iteratively finding the root of a function
+# Taken from
+# http://www.physics.rutgers.edu/~masud/computing/WPark_recipes_in_python.html
+def secant(func, oldx, x, *args, **kwargs):
+    TOL = kwargs.pop('TOL', 1e-6)
+    oldf, f = func(oldx, *args), func(x, *args)
+    if (abs(f) > abs(oldf)):
+        oldx, x = x, oldx
+        oldf, f = f, oldf
+    while 1:
+        dx = f * (x - oldx) / float(f - oldf)
+        if abs(dx) < TOL * (1 + abs(x)):
+            return x - dx
+        oldx, x = x, x - dx
+        oldf, f = f, func(x, *args)
