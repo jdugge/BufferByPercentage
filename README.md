@@ -6,7 +6,7 @@ Plugin for QGIS 2.0 for buffering polygon layers so the resulting features' area
 ![](world_buffered.png "Countries buffered to take up the area they would cover if they had the same population density as India")
 
 
-Usage
+Usage of the standalone plugin:
 ---------
 *Input vector layer*: lists all polygon layers currently loaded. Select the one you want to buffer.
 
@@ -23,7 +23,8 @@ Usage
 *Add result to canvas*: Check this option if you want the newly created shapefile to automatically be loaded into the canvas upon completion.
 
 
-
-
+Usage of the Processing plugin:
+---------
+*If you want to supply a single percentage value to be applied to all features, choose the "Fixed percentage buffer" algorithm. If you want to read the percentage value for each feature from an attribute, choose the "Variable percentage buffer" algorithm.
 
 
