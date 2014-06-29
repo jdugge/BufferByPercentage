@@ -127,7 +127,7 @@ class BufferByPercentagePlugin:
 
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.action)
-        self.iface.addPluginToMenu("&Buffer by Percentage", self.action)
+        self.iface.addPluginToVectorMenu("&Buffer by Percentage", self.action)
         Processing.addProvider(self.provider)
 
     def unload(self):
