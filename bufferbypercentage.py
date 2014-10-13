@@ -35,10 +35,10 @@ from .bufferbypercentagedialog import BufferByPercentageDialog
 # the Processing menu
 from processing.core.Processing import Processing
 from processing.core.GeoAlgorithm import GeoAlgorithm
-from processing.parameters.ParameterVector import ParameterVector
-from processing.parameters.ParameterNumber import ParameterNumber
-from processing.parameters.ParameterTableField import ParameterTableField
-from processing.outputs.OutputVector import OutputVector
+from processing.core.parameters import ParameterVector
+from processing.core.parameters import ParameterNumber
+from processing.core.parameters import ParameterTableField
+from processing.core.outputs import OutputVector
 from processing.tools import dataobjects, vector
 from processing.core.AlgorithmProvider import AlgorithmProvider
 

@@ -10,9 +10,9 @@
 
 [general]
 name=Buffer by Percentage
-qgisMinimumVersion=2.0
+qgisMinimumVersion=2.6
 description=Buffer polygon features so the buffered area is a specified percentage of the original area
-version=0.2
+version=0.2.1
 author=Juernjakob Dugge
 email=juernjakob@gmail.com
 
@@ -21,7 +21,7 @@ email=juernjakob@gmail.com
 # Optional items:
 
 # Uncomment the following line and add your changelog entries:
-changelog=Changed default values; added algorithms for the Processing framework
+changelog=Adjusted processing module import to reflect new structure
 
 # tags are comma separated with spaces allowed
 tags=
