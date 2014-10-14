@@ -1,7 +1,7 @@
 Buffer by Percentage
 ==================
 
-Plugin for QGIS 2.0 for buffering polygon layers so the resulting features' area is a specified percentage of the original.
+Plugin for QGIS 2.0 for buffering polygon layers so the resulting feature's area is a specified percentage of the original.
 
 ![](world_buffered.png "Countries buffered to take up the area they would cover if they had the same population density as India")
 
@@ -25,6 +25,8 @@ Usage of the standalone plugin:
 
 Usage of the Processing plugin:
 ---------
-*If you want to supply a single percentage value to be applied to all features, choose the "Fixed percentage buffer" algorithm. If you want to read the percentage value for each feature from an attribute, choose the "Variable percentage buffer" algorithm.
+
+- To supply a single percentage value to be applied to all features, choose the "Fixed percentage buffer" algorithm.
+- To read the percentage value for each feature from an attribute, choose the "Variable percentage buffer" algorithm.
 
 
