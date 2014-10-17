@@ -10,7 +10,7 @@
 
 [general]
 name=Buffer by Percentage
-qgisMinimumVersion=2.6
+qgisMinimumVersion=2.5
 description=Buffer polygon features so the buffered area is a specified percentage of the original area
 version=0.2.1
 author=Juernjakob Dugge
