@@ -196,6 +196,7 @@ class BufferByPercentagePlugin:
             self.iface.mainWindow().statusBar()\
             .showMessage("Adding features to results layer")
             resultpr.addFeatures(featuresScaled)
+            resultl.updateFields()
 
             if self.dlg.ui.radioMemoryLayer.isChecked():
                 QgsMapLayerRegistry.instance().addMapLayer(resultl)
