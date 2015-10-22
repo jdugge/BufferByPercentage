@@ -24,6 +24,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
+import qgis.gui
 
 # Initialize Qt resources from file resources.py
 from . import resources_rc  # lint:ok
@@ -53,6 +54,7 @@ path = os.path.dirname(fTools.__file__)
 ftu = imp.load_source('ftools_utils',
     os.path.join(path, 'tools', 'ftools_utils.py'))
 
+class ConvergenceError(RuntimeError): pass
 
 def find_buffer_length(geometry, target_factor, segments):
     """Find the buffer length that scales a geometry by a certain factor."""
@@ -61,9 +63,8 @@ def find_buffer_length(geometry, target_factor, segments):
                          geometry.boundingBox().height())
 
     buffer_length = secant(calculateError, buffer_initial,
-      2 * buffer_initial, geometry, segments,
-      area_unscaled, target_factor)
-
+                               2 * buffer_initial, geometry, segments,
+                               area_unscaled, target_factor)
     return buffer_length
 
 
@@ -85,12 +86,15 @@ def secant(func, oldx, x, *args, **kwargs):
     if (abs(f) > abs(oldf)):
         oldx, x = x, oldx
         oldf, f = f, oldf
-    while 1:
+    niterations = 0
+    while niterations < 10:
         dx = f * (x - oldx) / float(f - oldf)
         if abs(dx) < TOL * (1 + abs(x)):
             return x - dx
         oldx, x = x, x - dx
         oldf, f = f, func(x, *args)
+        niterations += 1
+    raise ConvergenceError, "Did not converge"
 
 
 # The "classic" plugin that appears in the "Plugins" menu.
@@ -184,8 +188,15 @@ class BufferByPercentagePlugin:
 
                     self.target_factor = max(0, percentage / 100.0)
 
-                buffer_length = find_buffer_length(feature.geometry(),
-                    self.target_factor, self.segments)
+                try:
+                    buffer_length = find_buffer_length(feature.geometry(),
+                        self.target_factor, self.segments)
+                except ConvergenceError:
+                    buffer_length = 0
+                    self.iface.messageBar().pushMessage("Error",
+                        "Could not find a buffer value within a reasonable " +
+                        "number of iterations for feature " + str(feature.id()),
+                        level= qgis.gui.QgsMessageBar.CRITICAL)
 
                 # Assign feature the buffered geometry
                 feature.setGeometry(feature.geometry().buffer(buffer_length,
