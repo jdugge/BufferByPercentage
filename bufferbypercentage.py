@@ -7,7 +7,7 @@
  the original area
                               -------------------
         begin                : 2013-10-12
-        copyright            : (C) 2013 by Juernjakob Dugge
+        copyright            : (C) 2016 by Juernjakob Dugge
         email                : juernjakob@gmail.com
  ***************************************************************************/
 
@@ -43,16 +43,6 @@ from processing.tools import dataobjects, vector
 from processing.core.AlgorithmProvider import AlgorithmProvider
 
 import os.path
-
-# Import the utilities from the fTools plugin (a standard QGIS plugin),
-# which provide convenience functions for handling QGIS vector layers
-import os
-import imp
-import fTools
-path = os.path.dirname(fTools.__file__)
-ftu = imp.load_source('ftools_utils',
-    os.path.join(path, 'tools', 'ftools_utils.py'))
-
 
 def find_buffer_length(geometry, target_factor, segments):
     """Find the buffer length that scales a geometry by a certain factor."""
@@ -146,7 +136,9 @@ class BufferByPercentagePlugin:
             self.target_factor = float(self.dlg.ui.param.text()) / 100.0
             self.segments = self.dlg.ui.segments.value()
 
-            layer = ftu.getMapLayerByName(self.dlg.ui.inputLayer.currentText())
+            layer = self.dlg.ui.inputLayer.itemData(
+                self.dlg.ui.inputLayer.currentIndex()
+            )
             fieldList = list(layer.dataProvider().fields())
 
             if self.dlg.ui.radioOutputLayer.isChecked():

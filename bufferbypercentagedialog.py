@@ -6,7 +6,7 @@
  Buffer polygon features so the buffered area is a specified percentage of the original area
                              -------------------
         begin                : 2013-10-12
-        copyright            : (C) 2013 by Juernjakob Dugge
+        copyright            : (C) 2016 by Juernjakob Dugge
         email                : juernjakob@gmail.com
  ***************************************************************************/
 
@@ -24,12 +24,8 @@ from PyQt4 import QtCore, QtGui
 import qgis.core as qgis
 from ui_bufferbypercentage import Ui_BufferByPercentage
 
-# Import the utilities from the fTools plugin (a standard QGIS plugin),
-# which provide convenience functions for handling QGIS vector layers
-import sys, os, imp
-import fTools
-path = os.path.dirname(fTools.__file__)
-ftu = imp.load_source('ftools_utils', os.path.join(path,'tools','ftools_utils.py'))
+import os
+
 
 class BufferByPercentageDialog(QtGui.QDialog):
     def __init__(self):
@@ -47,8 +43,12 @@ class BufferByPercentageDialog(QtGui.QDialog):
         myListA = []
         self.ui.inputLayer.clear()
         
-        myListA = ftu.getLayerNames( [ qgis.QGis.Polygon ] )
-        self.ui.inputLayer.addItems( myListA )
+        #myListA = ftu.getLayerNames( [ qgis.QGis.Polygon ] )
+        mapLayers = qgis.QgsMapLayerRegistry.instance().mapLayers()
+        polygonLayers = [mapLayers[layer] for layer in mapLayers
+                         if mapLayers[layer].geometryType() == qgis.QGis.Polygon]
+        for layer in polygonLayers:
+            self.ui.inputLayer.addItem( layer.name(), layer )
 
     def populateAttributes( self ):
         self.ui.dropdownPercentageField.clear()
