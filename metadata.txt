@@ -15,7 +15,7 @@ description=Buffer polygon features so the buffered area is a specified percenta
 about=Instead of buffering a polygon using a specified buffer distance, this
  plugin lets the user specify the area the buffered polygon should cover, as
  a percentage of the original polygon's area
-version=0.2.4
+version=0.2.4.1
 author=Juernjakob Dugge
 email=juernjakob@gmail.com
 
@@ -24,7 +24,8 @@ email=juernjakob@gmail.com
 # Optional items:
 
 # Uncomment the following line and add your changelog entries:
-changelog=0.2.4: Made plugin compatible with QGIS 2.16
+changelog=0.2.4.1: Fixed regression: Opening dialog failed when non-vector layers were present
+ 0.2.4: Made plugin compatible with QGIS 2.16
  0.2.3: Include plugin in Processing algorithms
  0.2.2: Fixed transferring attributes to buffered features
  0.2.1: Made plugin compatible with QGIS 2.6

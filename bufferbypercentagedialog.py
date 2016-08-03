@@ -40,10 +40,7 @@ class BufferByPercentageDialog(QtGui.QDialog):
         self.ui.inputLayer.currentIndexChanged.connect(self.populateAttributes)
         
     def populateLayers( self ):
-        myListA = []
         self.ui.inputLayer.clear()
-        
-        #myListA = ftu.getLayerNames( [ qgis.QGis.Polygon ] )
         mapLayers = qgis.QgsMapLayerRegistry.instance().mapLayers()
         polygonLayers = [mapLayers[layer] for layer in mapLayers
                          if mapLayers[layer].type() == qgis.QgsMapLayer.VectorLayer
