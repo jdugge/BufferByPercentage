@@ -47,6 +47,8 @@ import os.path
 def find_buffer_length(geometry, target_factor, segments):
     """Find the buffer length that scales a geometry by a certain factor."""
     area_unscaled = geometry.area()
+    print "NEXT"
+    print area_unscaled
     buffer_initial = 0.1 * (geometry.boundingBox().width() +
                          geometry.boundingBox().height())
 
@@ -62,6 +64,8 @@ def calculateError(buffer_length, geometry, segments, area_unscaled,
     """Calculate the difference between the current and the target factor."""
     geometry_scaled = geometry.buffer(buffer_length, segments)
     area_scaled = geometry_scaled.area()
+    print area_scaled
+
     return area_scaled / area_unscaled - target_factor
 
 

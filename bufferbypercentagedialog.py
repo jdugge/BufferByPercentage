@@ -46,7 +46,8 @@ class BufferByPercentageDialog(QtGui.QDialog):
         #myListA = ftu.getLayerNames( [ qgis.QGis.Polygon ] )
         mapLayers = qgis.QgsMapLayerRegistry.instance().mapLayers()
         polygonLayers = [mapLayers[layer] for layer in mapLayers
-                         if mapLayers[layer].geometryType() == qgis.QGis.Polygon]
+                         if mapLayers[layer].type() == qgis.QgsMapLayer.VectorLayer
+                         and mapLayers[layer].geometryType() == qgis.QGis.Polygon]
         for layer in polygonLayers:
             self.ui.inputLayer.addItem( layer.name(), layer )
 
