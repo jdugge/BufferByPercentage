@@ -41,6 +41,7 @@ from processing.core.parameters import ParameterTableField
 from processing.core.outputs import OutputVector
 from processing.tools import dataobjects, vector
 from processing.core.AlgorithmProvider import AlgorithmProvider
+import processing
 
 import os.path
 
@@ -71,17 +72,36 @@ def calculateError(buffer_length, geometry, segments, area_unscaled,
 # http://www.physics.rutgers.edu/~masud/computing/WPark_recipes_in_python.html
 def secant(func, oldx, x, *args, **kwargs):
     """Find the root of a function"""
-    TOL = kwargs.pop('TOL', 1e-6)
+    tolerance = kwargs.pop('tolerance', 1e-6)
+    max_steps = kwargs.pop('max_steps', 100)
+
+    steps = 0
     oldf, f = func(oldx, *args), func(x, *args)
-    if (abs(f) > abs(oldf)):
+
+    if (abs(f) > abs(oldf)):  # Determine the initial search direction
         oldx, x = x, oldx
         oldf, f = f, oldf
-    while 1:
+
+    while (f - oldf) != 0 and steps < max_steps:
         dx = f * (x - oldx) / float(f - oldf)
-        if abs(dx) < TOL * (1 + abs(x)):
+
+        if abs(dx) < tolerance * (1 + abs(x)):  # Converged
             return x - dx
+
         oldx, x = x, x - dx
         oldf, f = f, func(x, *args)
+        while f <= 0:
+            # Buffer length resulted in flipped polygon, reduce step size
+            x = oldx  # Undo current step
+            f = oldf
+            dx *= 0.5  # Halve the step size
+            oldx, x = x, x - dx
+            oldf, f = f, func(x, *args)
+
+        steps += 1
+
+    # Did not converge
+    return x - dx
 
 
 # The "classic" plugin that appears in the "Plugins" menu.
@@ -123,7 +143,7 @@ class BufferByPercentagePlugin:
 
     def unload(self):
         # Remove the plugin menu item and icon
-        self.iface.removePluginMenu("&Buffer by Percentage", self.action)
+        self.iface.removePluginVectorMenu("&Buffer by Percentage", self.action)
         self.iface.removeToolBarIcon(self.action)
 
     # run method that performs all the real work
@@ -255,7 +275,7 @@ class BufferByFixedPercentageAlgorithm(GeoAlgorithm):
                        'Output layer with selected features'))
 
     def processAlgorithm(self, progress):
-        layer = dataobjects.getObjectFromUri(
+        layer = processing.getObjectFromUri(
                 self.getParameterValue(self.INPUT))
         percentage = float(self.getParameterValue(self.PERCENTAGE))
         segments = int(self.getParameterValue(self.SEGMENTS))
@@ -305,7 +325,7 @@ class BufferByVariablePercentageAlgorithm(GeoAlgorithm):
                        'Output layer with selected features'))
 
     def processAlgorithm(self, progress):
-        layer = dataobjects.getObjectFromUri(
+        layer = processing.getObjectFromUri(
                 self.getParameterValue(self.INPUT))
         field = layer.fieldNameIndex(self.getParameterValue(self.FIELD))
         segments = int(self.getParameterValue(self.SEGMENTS))
