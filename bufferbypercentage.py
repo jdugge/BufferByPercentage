@@ -21,45 +21,61 @@
  ***************************************************************************/
 """
 # Import the PyQt and QGIS libraries
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
+# from PyQt5.QtCore import *
+#from PyQt5.QtGui import QIcon
+
+# from qgis.core import *
 
 # Initialize Qt resources from file resources.py
-from . import resources_rc  # lint:ok
+# from . import resources_rc  # lint:ok
 
 # Import the code for the dialog
-from .bufferbypercentagedialog import BufferByPercentageDialog
+# from .bufferbypercentagedialog import BufferByPercentageDialog
 
 # Import the Processing libraries so we can add the algorithm to
 # the Processing menu
-from processing.core.Processing import Processing
-from processing.core.GeoAlgorithm import GeoAlgorithm
-from processing.core.parameters import ParameterVector
-from processing.core.parameters import ParameterNumber
-from processing.core.parameters import ParameterTableField
-from processing.core.outputs import OutputVector
-from processing.tools import dataobjects, vector
-from processing.core.AlgorithmProvider import AlgorithmProvider
-import processing
+from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
+from qgis.core import (
+    QgsProcessingProvider,
+    QgsApplication,
+    QgsProcessing,
+    QgsProcessingParameterNumber,
+    QgsWkbTypes
+)
+from qgis.PyQt.QtGui import QIcon
 
-import os.path
+from processing.algs.qgis.QgisAlgorithm import QgisFeatureBasedAlgorithm
 
+import os
+pluginPath = os.path.split(os.path.dirname(__file__))[0]
+
+# from processing.core.Processing import Processing
+# from processing.core.GeoAlgorithm import GeoAlgorithm
+# from processing.core.parameters import ParameterVector
+# from processing.core.parameters import ParameterNumber
+# from processing.core.parameters import ParameterTableField
+# from processing.core.outputs import OutputVector
+# from processing.tools import dataobjects, vector
+# from processing.core.AlgorithmProvider import AlgorithmProvider
+# import processing
+#
+# import os.path
+#
 def find_buffer_length(geometry, target_factor, segments):
     """Find the buffer length that scales a geometry by a certain factor."""
     area_unscaled = geometry.area()
     buffer_initial = 0.1 * (geometry.boundingBox().width() +
-                         geometry.boundingBox().height())
+                            geometry.boundingBox().height())
 
     buffer_length = secant(calculateError, buffer_initial,
-      2 * buffer_initial, geometry, segments,
-      area_unscaled, target_factor)
+                           2 * buffer_initial, geometry, segments,
+                           area_unscaled, target_factor)
 
     return buffer_length
 
 
 def calculateError(buffer_length, geometry, segments, area_unscaled,
-    target_factor):
+                   target_factor):
     """Calculate the difference between the current and the target factor."""
     geometry_scaled = geometry.buffer(buffer_length, segments)
     area_scaled = geometry_scaled.area()
@@ -108,249 +124,344 @@ def secant(func, oldx, x, *args, **kwargs):
 # Also loads the Processing plugin.
 class BufferByPercentagePlugin:
     def __init__(self, iface):
+        pass
         # Save reference to the QGIS interface
-        self.iface = iface
-        # initialize plugin directory
-        self.plugin_dir = os.path.dirname(__file__)
-        # initialize locale
-        locale = QSettings().value("locale/userLocale")[0:2]
-        localePath = os.path.join(self.plugin_dir, 'i18n',
-            'bufferbypercentage_{}.qm'.format(locale))
-
-        if os.path.exists(localePath):
-            self.translator = QTranslator()
-            self.translator.load(localePath)
-
-            if qVersion() > '4.3.3':
-                QCoreApplication.installTranslator(self.translator)
+        # self.iface = iface
+        # # initialize plugin directory
+        # self.plugin_dir = os.path.dirname(__file__)
+        # # initialize locale
+        # locale = QSettings().value("locale/userLocale")[0:2]
+        # localePath = os.path.join(self.plugin_dir, 'i18n',
+        #     'bufferbypercentage_{}.qm'.format(locale))
+        #
+        # if os.path.exists(localePath):
+        #     self.translator = QTranslator()
+        #     self.translator.load(localePath)
+        #
+        #     if qVersion() > '4.3.3':
+        #         QCoreApplication.installTranslator(self.translator)
 
         # Create the dialog (after translation) and keep reference
-        self.dlg = BufferByPercentageDialog()
+        #        self.dlg = BufferByPercentageDialog()
         self.provider = BufferByPercentageProvider()
 
     def initGui(self):
-        # Create action that will start plugin configuration
-        self.action = QAction(
-            QIcon(":/plugins/bufferbypercentage/icon.svg"),
-            "Buffer by percentage", self.iface.mainWindow())
-        # connect the action to the run method
-        self.action.triggered.connect(self.run)
+        QgsApplication.processingRegistry().addProvider(self.provider)
 
-        # Add toolbar button and menu item
-        self.iface.addToolBarIcon(self.action)
-        self.iface.addPluginToVectorMenu("&Buffer by Percentage", self.action)
-        Processing.addProvider(self.provider, updateList=True)
+    #     # Create action that will start plugin configuration
+    #     self.action = QAction(
+    #         QIcon(":/plugins/bufferbypercentage/icon.svg"),
+    #         "Buffer by percentage", self.iface.mainWindow())
+    #     # connect the action to the run method
+    #     self.action.triggered.connect(self.run)
+    #
+    #     # Add toolbar button and menu item
+    #     self.iface.addToolBarIcon(self.action)
+    #     self.iface.addPluginToVectorMenu("&Buffer by Percentage", self.action)
+    #     Processing.addProvider(self.provider, updateList=True)
 
+    #
     def unload(self):
-        # Remove the plugin menu item and icon
-        self.iface.removePluginVectorMenu("&Buffer by Percentage", self.action)
-        self.iface.removeToolBarIcon(self.action)
+        QgsApplication.processingRegistry().removeProvider(self.provider)
+        #     # Remove the plugin menu item and icon
+        #     self.iface.removePluginVectorMenu("&Buffer by Percentage", self.action)
+        #     self.iface.removeToolBarIcon(self.action)
+        #
+        # # run method that performs all the real work
+        # def run(self):
+        #     # Populate the combo boxes
+        #     self.dlg.populateLayers()
+        #
+        #     self.dlg.show()
+        #     result = self.dlg.exec_()
+        #     if result == 1:
+        #         self.target_factor = float(self.dlg.ui.param.text()) / 100.0
+        #         self.segments = self.dlg.ui.segments.value()
+        #
+        #         layer = self.dlg.ui.inputLayer.itemData(
+        #             self.dlg.ui.inputLayer.currentIndex()
+        #         )
+        #         fieldList = list(layer.dataProvider().fields())
+        #
+        #         if self.dlg.ui.radioOutputLayer.isChecked():
+        #             shapefilename = self.dlg.ui.outputLayer.text()
+        #             if shapefilename == "":
+        #                 return 1
+        #
+        #         attributeIndex = -1
+        #         if self.dlg.ui.radioPercentageField.isChecked():
+        #             attributeName = self.dlg.ui.dropdownPercentageField\
+        #               .currentText()
+        #             attributeIndex = layer.dataProvider()\
+        #               .fieldNameIndex(attributeName)
+        #
+        #         nFeatures = layer.featureCount()
+        #
+        #         # Create a memory layer for storing the results
+        #         crsString = layer.crs().authid()
+        #         resultl = QgsVectorLayer("Polygon?crs=" + crsString,
+        #             "result", "memory")
+        #         resultpr = resultl.dataProvider()
+        #         resultpr.addAttributes(fieldList)
+        #
+        #         featuresScaled = []
+        #         # Loop over the features
+        #         for i, feature in enumerate(layer.dataProvider().getFeatures()):
+        #             self.iface.mainWindow().statusBar().showMessage(
+        #                 "Buffering feature {} of {}".format(i + 1, nFeatures))
+        #
+        #             if attributeIndex >= 0:
+        #                 if feature[attributeIndex] == "":
+        #                     percentage = 0
+        #                 else:
+        #                     percentage = float(feature[attributeIndex])
+        #
+        #                 self.target_factor = max(0, percentage / 100.0)
+        #
+        #             buffer_length = find_buffer_length(feature.geometry(),
+        #                 self.target_factor, self.segments)
+        #
+        #             # Assign feature the buffered geometry
+        #             feature.setGeometry(feature.geometry().buffer(buffer_length,
+        #                 self.segments))
+        #
+        #             featuresScaled.append(feature)
+        #
+        #         self.iface.mainWindow().statusBar()\
+        #         .showMessage("Adding features to results layer")
+        #         resultpr.addFeatures(featuresScaled)
+        #         resultl.updateFields()
+        #
+        #         if self.dlg.ui.radioMemoryLayer.isChecked():
+        #             QgsMapLayerRegistry.instance().addMapLayer(resultl)
+        #         elif self.dlg.ui.radioOutputLayer.isChecked():
+        #             QgsVectorFileWriter.writeAsVectorFormat(resultl,
+        #                 shapefilename, "CP1250", None, "ESRI Shapefile")
+        #             if self.dlg.ui.checkboxAddToCanvas.isChecked():
+        #                 layername = os.path.splitext(
+        #                     os.path.basename(str(shapefilename)))[0]
+        #                 vlayer = QgsVectorLayer(shapefilename, layername, "ogr")
+        #                 QgsMapLayerRegistry.instance().addMapLayer(vlayer)
+        #         self.iface.messageBar().pushMessage(
+        #             "Buffer by Percentage", "Process complete", duration=3)
+        #
+        #         self.iface.mainWindow().statusBar().clearMessage()
+        #         self.iface.mapCanvas().refresh()
 
-    # run method that performs all the real work
-    def run(self):
-        # Populate the combo boxes
-        self.dlg.populateLayers()
 
-        self.dlg.show()
-        result = self.dlg.exec_()
-        if result == 1:
-            self.target_factor = float(self.dlg.ui.param.text()) / 100.0
-            self.segments = self.dlg.ui.segments.value()
+# Classes for the Processing plugin
 
-            layer = self.dlg.ui.inputLayer.itemData(
-                self.dlg.ui.inputLayer.currentIndex()
-            )
-            fieldList = list(layer.dataProvider().fields())
-
-            if self.dlg.ui.radioOutputLayer.isChecked():
-                shapefilename = self.dlg.ui.outputLayer.text()
-                if shapefilename == "":
-                    return 1
-
-            attributeIndex = -1
-            if self.dlg.ui.radioPercentageField.isChecked():
-                attributeName = self.dlg.ui.dropdownPercentageField\
-                  .currentText()
-                attributeIndex = layer.dataProvider()\
-                  .fieldNameIndex(attributeName)
-
-            nFeatures = layer.featureCount()
-
-            # Create a memory layer for storing the results
-            crsString = layer.crs().authid()
-            resultl = QgsVectorLayer("Polygon?crs=" + crsString,
-                "result", "memory")
-            resultpr = resultl.dataProvider()
-            resultpr.addAttributes(fieldList)
-
-            featuresScaled = []
-            # Loop over the features
-            for i, feature in enumerate(layer.dataProvider().getFeatures()):
-                self.iface.mainWindow().statusBar().showMessage(
-                    "Buffering feature {} of {}".format(i + 1, nFeatures))
-
-                if attributeIndex >= 0:
-                    if feature[attributeIndex] == "":
-                        percentage = 0
-                    else:
-                        percentage = float(feature[attributeIndex])
-
-                    self.target_factor = max(0, percentage / 100.0)
-
-                buffer_length = find_buffer_length(feature.geometry(),
-                    self.target_factor, self.segments)
-
-                # Assign feature the buffered geometry
-                feature.setGeometry(feature.geometry().buffer(buffer_length,
-                    self.segments))
-
-                featuresScaled.append(feature)
-
-            self.iface.mainWindow().statusBar()\
-            .showMessage("Adding features to results layer")
-            resultpr.addFeatures(featuresScaled)
-            resultl.updateFields()
-
-            if self.dlg.ui.radioMemoryLayer.isChecked():
-                QgsMapLayerRegistry.instance().addMapLayer(resultl)
-            elif self.dlg.ui.radioOutputLayer.isChecked():
-                QgsVectorFileWriter.writeAsVectorFormat(resultl,
-                    shapefilename, "CP1250", None, "ESRI Shapefile")
-                if self.dlg.ui.checkboxAddToCanvas.isChecked():
-                    layername = os.path.splitext(
-                        os.path.basename(str(shapefilename)))[0]
-                    vlayer = QgsVectorLayer(shapefilename, layername, "ogr")
-                    QgsMapLayerRegistry.instance().addMapLayer(vlayer)
-            self.iface.messageBar().pushMessage(
-                "Buffer by Percentage", "Process complete", duration=3)
-
-            self.iface.mainWindow().statusBar().clearMessage()
-            self.iface.mapCanvas().refresh()
-
-
-#Classes for the Processing plugin
-
-class BufferByPercentageProvider(AlgorithmProvider):
+class BufferByPercentageProvider(QgsProcessingProvider):
     def __init__(self):
-        AlgorithmProvider.__init__(self)
+        super().__init__()
+        self.alglist = [
+            BufferByFixedPercentage()
+        ]
+        # for alg in self.alglist:
+        #     alg.provider = self
 
-        self.alglist = [BufferByFixedPercentageAlgorithm(),
-            BufferByVariablePercentageAlgorithm()]
+    def id(self, *args, **kwargs):
+        return 'bufferbypercentage'
+
+    def name(self, *args, **kwargs):
+        return 'Buffer by Percentage'
+
+    def icon(self):
+        return QIcon(os.path.join(pluginPath, 'bufferbypercentage', 'icon.svg'))
+
+    def loadAlgorithms(self, *args, **kwargs):
         for alg in self.alglist:
-            alg.provider = self
+            self.addAlgorithm(alg)
 
-    def unload(self):
-        AlgorithmProvider.unload(self)
-
-    def getName(self):
-        return 'Buffer by percentage'
-
-    def getDescription(self):
-        return 'Buffer by percentage'
-
-    def getIcon(self):
-        return QIcon(":/plugins/bufferbypercentage/icon.svg")
-
-    def _loadAlgorithms(self):
-        self.algs = self.alglist
+    def getAlgs(self):
+        return self.alglist
 
 
-class BufferByFixedPercentageAlgorithm(GeoAlgorithm):
+# def __init__(self):
+#         AlgorithmProvider.__init__(self)
+#
+#         self.alglist = [BufferByFixedPercentageAlgorithm(),
+#             BufferByVariablePercentageAlgorithm()]
+#         for alg in self.alglist:
+#             alg.provider = self
+#
+#     def unload(self):
+#         AlgorithmProvider.unload(self)
+#
+#     def getName(self):
+#         return 'Buffer by percentage'
+#
+#     def getDescription(self):
+#         return 'Buffer by percentage'
+#
+#     def getIcon(self):
+#         return QIcon(":/plugins/bufferbypercentage/icon.svg")
+#
+#     def _loadAlgorithms(self):
+#         self.algs = self.alglist
+#
+#
+
+
+class BufferByFixedPercentage(QgisFeatureBasedAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     PERCENTAGE = 'PERCENTAGE'
     SEGMENTS = 'SEGMENTS'
 
-    def defineCharacteristics(self):
-        self.name = 'Fixed percentage buffer'
-        self.group = 'Buffer by percentage'
+    def __init__(self):
+        super().__init__()
+        self.percentage = None
+        self.segments = None
 
-        self.addParameter(ParameterVector(self.INPUT, 'Input layer',
-                          [ParameterVector.VECTOR_TYPE_POLYGON], False))
-        self.addParameter(ParameterNumber(self.PERCENTAGE, 'Percentage',
-                          default=100.0))
-        self.addParameter(ParameterNumber(self.SEGMENTS, 'Segments', 1,
-                          default=5))
-        self.addOutput(OutputVector(self.OUTPUT,
-                       'Output layer with selected features'))
+    def name(self):
+        return 'bufferbyfixedpercentage'
 
-    def processAlgorithm(self, progress):
-        layer = processing.getObjectFromUri(
-                self.getParameterValue(self.INPUT))
-        percentage = float(self.getParameterValue(self.PERCENTAGE))
-        segments = int(self.getParameterValue(self.SEGMENTS))
+    def displayName(self, *args, **kwargs):
+        return 'Buffer by Fixed Percentage'
 
-        writer = self.getOutputFromName(
-                self.OUTPUT).getVectorWriter(layer.pendingFields().toList(),
-                                             QGis.WKBPolygon, layer.crs())
+    def group(self):
+        return self.tr('Buffer by Percentage')
 
-        current = 0
-        features = vector.features(layer)
-        total = 100.0 / float(len(features))
+    def inputLayerTypes(self):
+        return [QgsProcessing.TypeVectorPolygon]
 
-        outFeat = QgsFeature()
+    def outputName(self):
+        return self.tr('Buffer')
 
-        for inFeat in features:
-            attrs = inFeat.attributes()
-            inGeom = QgsGeometry(inFeat.geometry())
-            buffer_length = find_buffer_length(inGeom,
-                    percentage / 100.0, segments)
-            outGeom = inGeom.buffer(buffer_length, segments)
-            outFeat.setGeometry(outGeom)
-            outFeat.setAttributes(attrs)
-            writer.addFeature(outFeat)
-            current += 1
-            progress.setPercentage(int(current * total))
+    def outputType(self):
+        return QgsProcessing.TypeVectorPolygon
 
-        del writer
+    def outputWkbType(self, input_wkb_type):
+        return QgsWkbTypes.Polygon
 
+    def initParameters(self, config=None):
+        self.addParameter(QgsProcessingParameterNumber(self.PERCENTAGE,
+                                                       self.tr('Percentage'),
+                                                       type=QgsProcessingParameterNumber.Double,
+                                                       defaultValue=100.0))
+        self.addParameter(QgsProcessingParameterNumber(self.SEGMENTS,
+                                                       self.tr('Segments'),
+                                                       type=QgsProcessingParameterNumber.Integer,
+                                                       minValue=1,
+                                                       defaultValue=5))
 
-class BufferByVariablePercentageAlgorithm(GeoAlgorithm):
-    INPUT = 'INPUT'
-    OUTPUT = 'OUTPUT'
-    FIELD = 'FIELD'
-    SEGMENTS = 'SEGMENTS'
+    def prepareAlgorithm(self, parameters, context, feedback):
+        self.percentage = self.parameterAsDouble(parameters, self.PERCENTAGE, context)
+        self.segments = self.parameterAsInt(parameters, self.SEGMENTS, context)
 
-    def defineCharacteristics(self):
-        self.name = 'Variable percentage buffer'
-        self.group = 'Buffer by percentage'
+        return True
 
-        self.addParameter(ParameterVector(self.INPUT, 'Input layer',
-                          [ParameterVector.VECTOR_TYPE_POLYGON], False))
-        self.addParameter(ParameterTableField(self.FIELD, 'Percentage field',
-                          self.INPUT))
-        self.addParameter(ParameterNumber(self.SEGMENTS, 'Segments', 1,
-                          default=5))
-        self.addOutput(OutputVector(self.OUTPUT,
-                       'Output layer with selected features'))
+    def processFeature(self, feature, context, feedback):
+        input_geometry = feature.geometry()
+        if input_geometry:
+            buffer_length = find_buffer_length(input_geometry,
+                                               self.percentage / 100.0,
+                                               self.segments)
 
-    def processAlgorithm(self, progress):
-        layer = processing.getObjectFromUri(
-                self.getParameterValue(self.INPUT))
-        field = layer.fieldNameIndex(self.getParameterValue(self.FIELD))
-        segments = int(self.getParameterValue(self.SEGMENTS))
+            output_geometry = input_geometry.buffer(buffer_length,
+                                                    self.segments)
 
-        writer = self.getOutputFromName(
-                self.OUTPUT).getVectorWriter(layer.pendingFields().toList(),
-                                             QGis.WKBPolygon, layer.crs())
+            feature.setGeometry(output_geometry)
 
-        current = 0
-        features = vector.features(layer)
-        total = 100.0 / float(len(features))
+        return feature
 
-        outFeat = QgsFeature()
-
-        for inFeat in features:
-            attrs = inFeat.attributes()
-            inGeom = QgsGeometry(inFeat.geometry())
-            percentage = attrs[field]
-            buffer_length = find_buffer_length(inGeom,
-                    percentage / 100.0, segments)
-            outGeom = inGeom.buffer(buffer_length, segments)
-            outFeat.setGeometry(outGeom)
-            outFeat.setAttributes(attrs)
-            writer.addFeature(outFeat)
-            current += 1
-            progress.setPercentage(int(current * total))
-
-        del writer
+# class BufferByFixedPercentageAlgorithm(GeoAlgorithm):
+#     INPUT = 'INPUT'
+#     OUTPUT = 'OUTPUT'
+#     PERCENTAGE = 'PERCENTAGE'
+#     SEGMENTS = 'SEGMENTS'
+#
+#     def defineCharacteristics(self):
+#         self.name = 'Fixed percentage buffer'
+#         self.group = 'Buffer by percentage'
+#
+#         self.addParameter(ParameterVector(self.INPUT, 'Input layer',
+#                           [ParameterVector.VECTOR_TYPE_POLYGON], False))
+#         self.addParameter(ParameterNumber(self.PERCENTAGE, 'Percentage',
+#                           default=100.0))
+#         self.addParameter(ParameterNumber(self.SEGMENTS, 'Segments', 1,
+#                           default=5))
+#         self.addOutput(OutputVector(self.OUTPUT,
+#                        'Output layer with selected features'))
+#
+#     def processAlgorithm(self, progress):
+#         layer = processing.getObjectFromUri(
+#                 self.getParameterValue(self.INPUT))
+#         percentage = float(self.getParameterValue(self.PERCENTAGE))
+#         segments = int(self.getParameterValue(self.SEGMENTS))
+#
+#         writer = self.getOutputFromName(
+#                 self.OUTPUT).getVectorWriter(layer.pendingFields().toList(),
+#                                              QGis.WKBPolygon, layer.crs())
+#
+#         current = 0
+#         features = vector.features(layer)
+#         total = 100.0 / float(len(features))
+#
+#         outFeat = QgsFeature()
+#
+#         for inFeat in features:
+#             attrs = inFeat.attributes()
+#             inGeom = QgsGeometry(inFeat.geometry())
+#             buffer_length = find_buffer_length(inGeom,
+#                     percentage / 100.0, segments)
+#             outGeom = inGeom.buffer(buffer_length, segments)
+#             outFeat.setGeometry(outGeom)
+#             outFeat.setAttributes(attrs)
+#             writer.addFeature(outFeat)
+#             current += 1
+#             progress.setPercentage(int(current * total))
+#
+#         del writer
+#
+#
+# class BufferByVariablePercentageAlgorithm(GeoAlgorithm):
+#     INPUT = 'INPUT'
+#     OUTPUT = 'OUTPUT'
+#     FIELD = 'FIELD'
+#     SEGMENTS = 'SEGMENTS'
+#
+#     def defineCharacteristics(self):
+#         self.name = 'Variable percentage buffer'
+#         self.group = 'Buffer by percentage'
+#
+#         self.addParameter(ParameterVector(self.INPUT, 'Input layer',
+#                           [ParameterVector.VECTOR_TYPE_POLYGON], False))
+#         self.addParameter(ParameterTableField(self.FIELD, 'Percentage field',
+#                           self.INPUT))
+#         self.addParameter(ParameterNumber(self.SEGMENTS, 'Segments', 1,
+#                           default=5))
+#         self.addOutput(OutputVector(self.OUTPUT,
+#                        'Output layer with selected features'))
+#
+#     def processAlgorithm(self, progress):
+#         layer = processing.getObjectFromUri(
+#                 self.getParameterValue(self.INPUT))
+#         field = layer.fieldNameIndex(self.getParameterValue(self.FIELD))
+#         segments = int(self.getParameterValue(self.SEGMENTS))
+#
+#         writer = self.getOutputFromName(
+#                 self.OUTPUT).getVectorWriter(layer.pendingFields().toList(),
+#                                              QGis.WKBPolygon, layer.crs())
+#
+#         current = 0
+#         features = vector.features(layer)
+#         total = 100.0 / float(len(features))
+#
+#         outFeat = QgsFeature()
+#
+#         for inFeat in features:
+#             attrs = inFeat.attributes()
+#             inGeom = QgsGeometry(inFeat.geometry())
+#             percentage = attrs[field]
+#             buffer_length = find_buffer_length(inGeom,
+#                     percentage / 100.0, segments)
+#             outGeom = inGeom.buffer(buffer_length, segments)
+#             outFeat.setGeometry(outGeom)
+#             outFeat.setAttributes(attrs)
+#             writer.addFeature(outFeat)
+#             current += 1
+#             progress.setPercentage(int(current * total))
+#
+#         del writer

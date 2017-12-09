@@ -22,32 +22,7 @@
 """
 
 
-def name():
-    return "Buffer by Percentage"
-
-
-def description():
-    return "Buffer polygon features so the buffered area is a specified percentage of the original area"
-
-
-def version():
-    return "Version 0.1"
-
-
-def icon():
-    return "icon.png"
-
-
-def qgisMinimumVersion():
-    return "2.0"
-
-def author():
-    return "Juernjakob Dugge"
-
-def email():
-    return "juernjakob@gmail.com"
-
 def classFactory(iface):
     # load BufferByPercentage class from file BufferByPercentage
-    from bufferbypercentage import BufferByPercentagePlugin
+    from .bufferbypercentage import BufferByPercentagePlugin, BufferByFixedPercentage
     return BufferByPercentagePlugin(iface)
