@@ -126,10 +126,10 @@ class BufferByPercentageProvider(QgsProcessingProvider):
         return 'Buffer by Percentage'
 
     def icon(self):
-        return QIcon(os.path.join(pluginPath, 'bufferbypercentage', 'icon.svg'))
+        return QIcon(os.path.join(pluginPath, 'BufferByPercentage', 'icon.svg'))
 
     def svgIconPath(self):
-        return os.path.join(pluginPath, 'bufferbypercentage', 'icon.svg')
+        return os.path.join(pluginPath, 'BufferByPercentage', 'icon.svg')
 
     def loadAlgorithms(self, *args, **kwargs):
         for alg in self.alglist:
@@ -170,7 +170,7 @@ class BufferByFixedPercentage(QgisFeatureBasedAlgorithm):
         return self.tr('Percentage buffer')
 
     def icon(self):
-        return QIcon(os.path.join(pluginPath, 'bufferbypercentage', 'icon.svg'))
+        return QIcon(os.path.join(pluginPath, 'BufferByPercentage', 'icon.svg'))
 
     def inputLayerTypes(self):
         return [QgsProcessing.TypeVectorPolygon]
@@ -252,7 +252,7 @@ class BufferByVariablePercentage(QgisFeatureBasedAlgorithm):
         return self.tr('Percentage buffer')
 
     def icon(self):
-        return QIcon(os.path.join(pluginPath, 'bufferbypercentage', 'icon.svg'))
+        return QIcon(os.path.join(pluginPath, 'BufferByPercentage', 'icon.svg'))
 
     def inputLayerTypes(self):
         return [QgsProcessing.TypeVectorPolygon]

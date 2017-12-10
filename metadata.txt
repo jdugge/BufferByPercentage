@@ -10,7 +10,7 @@ description=Buffer polygon features so the buffered area is a specified percenta
 about=Instead of buffering a polygon using a specified buffer distance, this
  plugin lets the user specify the area the buffered polygon should cover, as
  a percentage of the original polygon's area
-version=0.2.5
+version=0.3.0
 author=Juernjakob Dugge
 email=juernjakob@gmail.com
 
