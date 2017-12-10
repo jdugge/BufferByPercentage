@@ -6,6 +6,7 @@
 [general]
 name=Buffer by Percentage
 qgisMinimumVersion=2.99
+qgisMaximumVersion=3.99
 description=Buffer polygon features so the buffered area is a specified percentage of the original area
 about=Instead of buffering a polygon using a specified buffer distance, this
  plugin lets the user specify the area the buffered polygon should cover, as
