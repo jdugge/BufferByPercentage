@@ -1,8 +1,3 @@
-# This file contains metadata for your plugin. Beginning
-# with version 1.8 this is the preferred way to supply information about a
-# plugin. The current method of embedding metadata in __init__.py will
-# be supported until version 2.0
-
 # This file should be included when you package your plugin.
 
 # Mandatory items:
@@ -10,7 +5,7 @@
 
 [general]
 name=Buffer by Percentage
-qgisMinimumVersion=2.5
+qgisMinimumVersion=2.99
 description=Buffer polygon features so the buffered area is a specified percentage of the original area
 about=Instead of buffering a polygon using a specified buffer distance, this
  plugin lets the user specify the area the buffered polygon should cover, as
@@ -24,7 +19,8 @@ email=juernjakob@gmail.com
 # Optional items:
 
 # Uncomment the following line and add your changelog entries:
-changelog=0.2.5: Bugfix: Narrow polygons caused divde by zero
+changelog=0.3.0: Made plugin compatible with QGIS3, removed the standalone plugin interface. The plugin is now only available in the Processing framework.
+ 0.2.5: Bugfix: Narrow polygons caused divde by zero
  0.2.4.2: Fixed regression: Debug messages were printed to the console
  0.2.4.1: Fixed regression: Opening dialog failed when non-vector layers were present
  0.2.4: Made plugin compatible with QGIS 2.16

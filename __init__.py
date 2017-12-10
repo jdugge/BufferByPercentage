@@ -23,6 +23,5 @@
 
 
 def classFactory(iface):
-    # load BufferByPercentage class from file BufferByPercentage
-    from .bufferbypercentage import BufferByPercentagePlugin, BufferByFixedPercentage
+    from .bufferbypercentage import BufferByPercentagePlugin
     return BufferByPercentagePlugin(iface)

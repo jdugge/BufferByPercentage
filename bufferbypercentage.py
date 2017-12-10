@@ -20,21 +20,7 @@
  *                                                                         *
  ***************************************************************************/
 """
-# Import the PyQt and QGIS libraries
-# from PyQt5.QtCore import *
-# from PyQt5.QtGui import QIcon
 
-# from qgis.core import *
-
-# Initialize Qt resources from file resources.py
-# from . import resources_rc  # lint:ok
-
-# Import the code for the dialog
-# from .bufferbypercentagedialog import BufferByPercentageDialog
-
-# Import the Processing libraries so we can add the algorithm to
-# the Processing menu
-from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 from qgis.core import (
     QgsProcessingProvider,
     QgsApplication,
@@ -52,18 +38,6 @@ import os
 pluginPath = os.path.split(os.path.dirname(__file__))[0]
 
 
-# from processing.core.Processing import Processing
-# from processing.core.GeoAlgorithm import GeoAlgorithm
-# from processing.core.parameters import ParameterVector
-# from processing.core.parameters import ParameterNumber
-# from processing.core.parameters import ParameterTableField
-# from processing.core.outputs import OutputVector
-# from processing.tools import dataobjects, vector
-# from processing.core.AlgorithmProvider import AlgorithmProvider
-# import processing
-#
-# import os.path
-#
 def find_buffer_length(geometry, target_factor, segments):
     """Find the buffer length that scales a geometry by a certain factor."""
     area_unscaled = geometry.area()
@@ -174,13 +148,29 @@ class BufferByFixedPercentage(QgisFeatureBasedAlgorithm):
         self.segments = None
 
     def name(self):
-        return 'bufferbyfixedpercentage'
+        return 'fixedpercentagebuffer'
 
     def displayName(self, *args, **kwargs):
-        return 'Buffer by Fixed Percentage'
+        return 'Fixed percentage buffer'
+
+    def shortHelpString(self):
+        return 'Given an input polygon layer and a percentage value, this ' \
+               'algorithm creates a buffer area for each feature so that the ' \
+               'area of the buffered feature is the specified percentage of ' \
+               'the area of the input feature.\n' \
+               'For example, when specifying a percentage value of 200 %, ' \
+               'the buffered features would have twice the area of the input ' \
+               'features. For a percentage value of 50 %, the buffered ' \
+               'features would have half the area of the input features.\n' \
+               'The segments parameter controls the number of line segments ' \
+               'to use to approximate a quarter circle when creating rounded ' \
+               'offsets.'
 
     def group(self):
-        return self.tr('Buffer by Percentage')
+        return self.tr('Percentage buffer')
+
+    def icon(self):
+        return QIcon(os.path.join(pluginPath, 'bufferbypercentage', 'icon.svg'))
 
     def inputLayerTypes(self):
         return [QgsProcessing.TypeVectorPolygon]
@@ -239,13 +229,30 @@ class BufferByVariablePercentage(QgisFeatureBasedAlgorithm):
         self.segments = None
 
     def name(self):
-        return 'bufferbyvariablepercentage'
+        return 'variablepercentagebuffer'
 
     def displayName(self, *args, **kwargs):
-        return 'Buffer by Variable Percentage'
+        return 'Variable percentage buffer'
+
+    def shortHelpString(self):
+        return 'Given an input polygon layer and a percentage field, this ' \
+               'algorithm creates a buffer area for each feature so that the ' \
+               'area of the buffered feature is a specified percentage of ' \
+               'the area of the input feature. The percentage value is taken' \
+               'from the specified percentage field of each feature.\n' \
+               'For example, when a feature specifies a percentage value of ' \
+               '200 %, the buffered feature would have twice the area of ' \
+               'the input feature. For a percentage value of 50 %, the buffered ' \
+               'feature would have half the area of the input feature.\n' \
+               'The segments parameter controls the number of line segments ' \
+               'to use to approximate a quarter circle when creating rounded ' \
+               'offsets.'
 
     def group(self):
-        return self.tr('Buffer by Percentage')
+        return self.tr('Percentage buffer')
+
+    def icon(self):
+        return QIcon(os.path.join(pluginPath, 'bufferbypercentage', 'icon.svg'))
 
     def inputLayerTypes(self):
         return [QgsProcessing.TypeVectorPolygon]
