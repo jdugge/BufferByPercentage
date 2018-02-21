@@ -111,13 +111,6 @@ class BufferByPercentagePlugin:
 class BufferByPercentageProvider(QgsProcessingProvider):
     def __init__(self):
         super().__init__()
-        self.alglist = [
-            BufferByFixedPercentage(),
-            BufferByVariablePercentage()
-        ]
-
-    def getAlgs(self):
-        return self.alglist
 
     def id(self, *args, **kwargs):
         return 'bufferbypercentage'
@@ -132,8 +125,8 @@ class BufferByPercentageProvider(QgsProcessingProvider):
         return os.path.join(pluginPath, 'BufferByPercentage', 'icon.svg')
 
     def loadAlgorithms(self, *args, **kwargs):
-        for alg in self.alglist:
-            self.addAlgorithm(alg)
+        self.addAlgorithm(BufferByFixedPercentage())
+        self.addAlgorithm(BufferByVariablePercentage())
 
 
 class BufferByFixedPercentage(QgisFeatureBasedAlgorithm):
