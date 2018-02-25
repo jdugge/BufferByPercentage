@@ -207,7 +207,7 @@ class BufferByFixedPercentage(QgisFeatureBasedAlgorithm):
 
             feature.setGeometry(output_geometry)
 
-        return feature
+        return [feature]
 
 
 class BufferByVariablePercentage(QgisFeatureBasedAlgorithm):
@@ -291,4 +291,4 @@ class BufferByVariablePercentage(QgisFeatureBasedAlgorithm):
 
             feature.setGeometry(output_geometry)
 
-        return feature
+        return [feature]
