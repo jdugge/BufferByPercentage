@@ -7,8 +7,7 @@
  the original area
                               -------------------
         begin                : 2013-10-12
-        copyright            : (C) 2016 by Juernjakob Dugge
-        email                : juernjakob@gmail.com
+        copyright            : (C) 2020 by Juernjakob Dugge
  ***************************************************************************/
 
 /***************************************************************************
@@ -56,6 +55,9 @@ def calculateError(buffer_length, geometry, segments, area_unscaled,
     """Calculate the difference between the current and the target factor."""
     geometry_scaled = geometry.buffer(buffer_length, segments)
     area_scaled = geometry_scaled.area()
+    
+    if area_scaled == 0:
+        raise ValueError('Buffer length leads to zero-area polygon')
 
     return area_scaled / area_unscaled - target_factor
 
@@ -69,6 +71,7 @@ def secant(func, oldx, x, *args, **kwargs):
     max_steps = kwargs.pop('max_steps', 100)
 
     steps = 0
+    dx = 0
     oldf, f = func(oldx, *args), func(x, *args)
 
     if (abs(f) > abs(oldf)):  # Determine the initial search direction
@@ -82,9 +85,11 @@ def secant(func, oldx, x, *args, **kwargs):
             return x - dx
 
         oldx, x = x, x - dx
-        oldf, f = f, func(x, *args)
-        while f <= 0:
-            # Buffer length resulted in flipped polygon, reduce step size
+        
+        try:
+            oldf, f = f, func(x, *args)
+        except ValueError:
+            # The current step caused an invalid result. Halve the step size
             x = oldx  # Undo current step
             f = oldf
             dx *= 0.5  # Halve the step size
