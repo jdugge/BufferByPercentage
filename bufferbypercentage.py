@@ -24,13 +24,13 @@ from qgis.core import (
     QgsProcessingProvider,
     QgsApplication,
     QgsProcessing,
+    QgsProcessingFeatureBasedAlgorithm,
     QgsProcessingParameterNumber,
     QgsProcessingParameterField,
     QgsWkbTypes
 )
+from qgis.PyQt.QtCore import QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-
-from processing.algs.qgis.QgisAlgorithm import QgisFeatureBasedAlgorithm
 
 import os
 
@@ -134,7 +134,15 @@ class BufferByPercentageProvider(QgsProcessingProvider):
         self.addAlgorithm(BufferByVariablePercentage())
 
 
-class BufferByFixedPercentage(QgisFeatureBasedAlgorithm):
+class PercentageBufferAlgorithm(QgsProcessingFeatureBasedAlgorithm):
+    def tr(self, string):
+        return QCoreApplication.translate(type(self).__name__, string)
+
+    def createInstance(self):
+        return type(self)()
+
+
+class BufferByFixedPercentage(PercentageBufferAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     PERCENTAGE = 'PERCENTAGE'
@@ -215,7 +223,7 @@ class BufferByFixedPercentage(QgisFeatureBasedAlgorithm):
         return [feature]
 
 
-class BufferByVariablePercentage(QgisFeatureBasedAlgorithm):
+class BufferByVariablePercentage(PercentageBufferAlgorithm):
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
     FIELD = 'FIELD'
